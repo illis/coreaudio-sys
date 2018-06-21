@@ -59,7 +59,7 @@ fn frameworks_path() -> Result<String, std::io::Error> {
 
         Ok(directory)
     } else {
-        Ok("/System/Library/Frameworks".to_string())
+        Ok("/opt/osxcross/SDK/MacOSX10.11.sdk/System/Library/Frameworks".to_string())
     }
 }
 
@@ -140,6 +140,7 @@ fn build(frameworks_path: &str) {
         .trust_clang_mangling(false)
         .derive_default(true)
         .rustfmt_bindings(false)
+        .clang_arg("-I/opt/osxcross/SDK/MacOSX10.11.sdk/usr/include/")
         .generate()
         .expect("unable to generate bindings");
 
@@ -149,7 +150,6 @@ fn build(frameworks_path: &str) {
         .expect("could not write bindings");
 }
 
-#[cfg(any(target_os = "macos", target_os = "ios"))]
 fn main() {
     if let Ok(directory) = frameworks_path() {
         build(&directory);
@@ -158,7 +158,3 @@ fn main() {
     }
 }
 
-#[cfg(not(any(target_os = "macos", target_os = "ios")))]
-fn main() {
-    eprintln!("coreaudio-sys requires macos or ios target");
-}
